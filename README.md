@@ -13,8 +13,6 @@ Currently, the following items are supported for DNS services at Akami.
 The --json flag will format output as JSON to be consumed by other tools such as [jq](https://stedolan.github.io/jq/).
 
 # Usage
-
-## General usage
 ```bash
 Usage: akcli [OPTIONS] COMMAND [ARGS]...
 
