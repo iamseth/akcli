@@ -22,6 +22,8 @@ pip install akcli
 ## Manually
 
 ```bash
+git clone https://github.com/iamseth/akcli.git
+cd akcli
 python setup.py build
 sudo python setup.py install
 ```
