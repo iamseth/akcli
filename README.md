@@ -12,6 +12,20 @@ Currently, the following items are supported for DNS services at Akami.
 
 The --json flag will format output as JSON to be consumed by other tools such as [jq](https://stedolan.github.io/jq/).
 
+# Installation
+
+## PyPi
+```bash
+pip install akcli
+```
+
+## Manually
+
+```bash
+python setup.py build
+sudo python setup.py install
+```
+
 # Usage
 ```bash
 Usage: akcli [OPTIONS] COMMAND [ARGS]...
