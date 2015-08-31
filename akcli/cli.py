@@ -5,6 +5,7 @@ import pprint
 
 import click
 import sys
+import akcli
 
 from dns import AkamaiDNS
 
@@ -20,7 +21,7 @@ class Context(object):
 @click.option('--debug', is_flag=True, help='Enables debug mode.')
 @click.option('--json', is_flag=True, help='Output as JSON.')
 @click.option('--config', type=click.File(), default='{}/.akamai.cfg'.format(expanduser("~")))
-@click.version_option('1.0')
+@click.version_option(akcli.__version__)
 @click.pass_context
 def cli(ctx, verbose, debug, json, config):
     ctx.obj = Context()
