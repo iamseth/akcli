@@ -26,6 +26,18 @@ python setup.py build
 sudo python setup.py install
 ```
 
+# Configuration
+
+By default, akcli looks for a config file at ~/.akamai.cfg. The file should look something like this.
+
+```ini
+[auth]
+baseurl = https://abcd-yaddayadda.luna.akamaiapis.net/
+client_token = abcd-yaddayadda
+client_secret = randomstuffhere
+access_token = abcd-randomstuffhere
+```
+
 # Usage
 ```bash
 Usage: akcli [OPTIONS] COMMAND [ARGS]...
