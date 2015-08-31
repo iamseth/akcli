@@ -118,3 +118,14 @@ class AkamaiDNS(object):
         new_record = {'name': name, 'target': target, 'ttl': ttl, 'active': True}
         zone['zone'].get(record_type).append(new_record)
         return self._update_zone(zone)
+
+    def remove_record(self, zone_name, record_type, name):
+        record_type = record_type.lower()
+        zone = self.fetch_zone(zone_name)
+        if not zone:
+            raise AkamaiDNSError('Zone {0} not found.'.format(zone_name))
+
+        record = self.fetch_record(zone_name, record_type, name)
+        record.pop('type', None)
+        zone['zone'].get(record_type).remove(record)
+        return self._update_zone(zone)

@@ -4,6 +4,7 @@ from os.path import expanduser
 import pprint
 
 import click
+import sys
 
 from dns import AkamaiDNS
 
@@ -53,6 +54,7 @@ def add_record(ctx, zone, name, type, target, ttl):
         click.echo(json.dumps("Record added successfully."))
     else:
         click.echo(json.dumps("Failed to add record."))
+        sys.exit(1)
 
 
 @dns.command()
@@ -67,6 +69,19 @@ def fetch_record(ctx, zone, name, type):
     else:
         click.echo(record)
 
+
+@dns.command()
+@click.argument('zone')
+@click.argument('name')
+@click.argument('type', type=click.Choice(SUPPORTED_RECORD_TYPES))
+@click.pass_context
+def remove_record(ctx, zone, name, type):
+    successful = ctx.obj.akamai_dns.remove_record(zone_name=zone, record_type=type, name=name)
+    if successful:
+        click.echo('Record has been removed.')
+    else:
+        click.echo('Unable to remove record.')
+        sys.exit(1)
 
 @dns.command()
 @click.argument('zone')
