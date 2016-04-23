@@ -24,23 +24,23 @@ class AkamaiDNS(object):
                                          access_token=access_token,
                                          max_body=128 * 1024)
 
-    def _update_zone(self, zone_name):
+    def _update_zone(self, zone):
         '''Update a given Zone. This method will handle incrementing the SOA serial for you.
 
-        :param zone_name: This is the name of the zone e.g. example.com.
-        :return:
+        :param zone: The zone to update.
+        :return: True if successful otherwise False.
         '''
-        # Increment the serial.
-        name = zone_name['zone']['name']
-        zone_name['zone']['soa']['serial'] += 1
 
-        # POST the updated zone file.
+        # Increment the serial.
+        zone['zone']['soa']['serial'] += 1
+        name = zone['zone']['name']
         url = urljoin(self.baseurl, '/config-dns/v1/zones/{0}'.format(name))
         headers = {'content-type': 'application/json'}
-        result = self.session.post(url, data=json.dumps(zone_name), headers=headers)
+        result = self.session.post(url, data=json.dumps(zone), headers=headers)
 
         if result.status_code != 204:
-            log.error('Something went very wrong with updating the zone "%s"', zone_name)
+            log.error('Something went very wrong with updating the zone "{0}": {1}', name, result.text)
+            return False
         return True
 
     def fetch_zone(self, zone_name):
@@ -52,7 +52,7 @@ class AkamaiDNS(object):
         url = urljoin(self.baseurl, '/config-dns/v1/zones/{0}'.format(zone_name))
         result = self.session.get(url)
         if result.status_code == 404:
-            log.error('Zone "%s" not found.', zone_name)
+            log.error('Zone "{0}" not found.', zone_name)
             return None
         return result.json()
 
