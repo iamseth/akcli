@@ -110,6 +110,8 @@ class AkamaiDNS(object):
     def add_record(self, zone_name, record_type, name, target, ttl=600):
         '''Add a new DNS record to a zone.
 
+        If the record exists, this will still return successfully so it is safe to re-run.
+
         :param zone_name: Name of the zone to add a record to.
         :param record_type: Type of record (a, cname, ptr, etc).
         :param name: This is the "from" section. That is for web01.example.com, this would be web01.
@@ -122,11 +124,7 @@ class AkamaiDNS(object):
         if not zone:
             raise AkamaiDNSError('Zone {0} not found.'.format(zone_name))
 
-        if self.record_exists(zone_name=zone_name, record_type=record_type, name=name):
-            return True
-
-        new_record = {'name': name, 'target': target, 'ttl': ttl, 'active': True}
-        zone['zone'].get(record_type).append(new_record)
+        zone['zone'][record_type].append({'name': name, 'target': target, 'ttl': ttl, 'active': True})
         return self._update_zone(zone)
 
     def remove_record(self, zone_name, record_type, name):
