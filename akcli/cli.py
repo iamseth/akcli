@@ -7,7 +7,7 @@ import click
 import sys
 import akcli
 
-from dns import AkamaiDNS
+from akcli.dns import AkamaiDNS
 
 SUPPORTED_RECORD_TYPES = ['A', 'CNAME', 'NS']
 
