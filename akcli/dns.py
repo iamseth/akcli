@@ -1,12 +1,15 @@
+import sys
 import json
-from urlparse import urljoin
 import logging
-
 import requests
 from akamai.edgegrid import EdgeGridAuth
 
-log = logging.getLogger(__name__)
+if sys.version_info.major < 3:
+    from urlparse import urljoin
+else:
+    from urllib.parse import urljoin
 
+log = logging.getLogger(__name__)
 
 class AkamaiDNSError(Exception):
     pass
@@ -54,6 +57,13 @@ class AkamaiDNS(object):
         return result.json()
 
     def list_records(self, zone_name, record_type=None):
+        '''List all records for a particular zone.
+
+        :param zone_name: This is the name of the zone e.g. example.com.
+        :param record_type: (Optional) The type of records to limit the list to.
+        :return: A list containing all records for the zone.
+        '''
+
         records = []
         zone = self.fetch_zone(zone_name)['zone']
         if record_type:
@@ -64,7 +74,7 @@ class AkamaiDNS(object):
         else:
 
             for key, val in zone.items():
-                if type(val) is list:
+                if isinstance(val, list):
                     for record in val:
                         record['type'] = key.upper()
                         records.append(record)
