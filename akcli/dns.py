@@ -130,6 +130,12 @@ class AkamaiDNS(object):
         return self._update_zone(zone)
 
     def remove_record(self, zone_name, record_type, name):
+        '''Remove a DNS record from a given zone.
+
+        :param zone_name: Name of the zone to remove a record from.
+        :param name: This is the "from" section. That is for web01.example.com, this would be web01.
+        :return: Returns True if successful, otherwise False.
+        '''
         record_type = record_type.lower()
         zone = self.fetch_zone(zone_name)
         if not zone:
