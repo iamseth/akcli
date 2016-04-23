@@ -63,7 +63,7 @@ class AkamaiDNS(object):
         :param record_type: (Optional) The type of records to limit the list to.
         :return: A list containing all records for the zone.
         '''
-        
+
         zone = self.fetch_zone(zone_name)['zone']
         records = []
         for key, val in zone.items():
@@ -76,33 +76,6 @@ class AkamaiDNS(object):
         if record_type:
             return [r for r in records if r['type'] == record_type.upper()]
         return records
-
-    def fetch_record(self, zone_name, record_type, name):
-        '''Fetch a dictionary representation of a particular DNS record.
-
-        :param zone_name: This is the name of the zone e.g. example.com.
-        :param name: This is the "from" section. That is for web01.example.com, this would be web01.
-        :param record_type:
-        :return:
-        '''
-
-        for record in self.list_records(zone_name, record_type):
-            if record['name'] == name:
-                return record
-        return None
-
-    def record_exists(self, zone_name, record_type, name):
-        '''Determine if a particular DNS record already exists.
-
-        :param zone_name: Name of the zone to add a record to.
-        :param record_type: Type of record (a, cname, ptr, etc).
-        :param name: This is the "from" section. That is for web01.example.com, this would be web01.
-        :return: True if record found, otherwise False.
-        '''
-        record_type = record_type.lower()
-        if self.fetch_record(zone_name=zone_name, record_type=record_type, name=name):
-            return True
-        return False
 
     def add_record(self, zone_name, record_type, name, target, ttl=600):
         '''Add a new DNS record to a zone.
@@ -124,11 +97,13 @@ class AkamaiDNS(object):
         zone['zone'][record_type].append({'name': name, 'target': target, 'ttl': ttl, 'active': True})
         return self._update_zone(zone)
 
-    def remove_record(self, zone_name, record_type, name):
+    def remove_record(self, zone_name, record_type, name, target):
         '''Remove a DNS record from a given zone.
 
         :param zone_name: Name of the zone to remove a record from.
         :param name: This is the "from" section. That is for web01.example.com, this would be web01.
+        :param target: This is the "to" section e.g. "10.0.0.1".
+
         :return: Returns True if successful, otherwise False.
         '''
         record_type = record_type.lower()
@@ -136,7 +111,9 @@ class AkamaiDNS(object):
         if not zone:
             raise AkamaiDNSError('Zone {0} not found.'.format(zone_name))
 
-        record = self.fetch_record(zone_name, record_type, name)
-        record.pop('type', None)
-        zone['zone'].get(record_type).remove(record)
-        return self._update_zone(zone)
+        for record in self.list_records(zone_name, record_type):
+            if (record['name'].lower() == name.lower()) and (record['target'] == target):
+                record.pop('type', None)
+                zone['zone'].get(record_type).remove(record)
+                return self._update_zone(zone)
+        return True

@@ -75,9 +75,10 @@ def fetch_record(ctx, zone, name, type):
 @click.argument('zone')
 @click.argument('name')
 @click.argument('type', type=click.Choice(SUPPORTED_RECORD_TYPES))
+@click.argument('target')
 @click.pass_context
-def remove_record(ctx, zone, name, type):
-    successful = ctx.obj.akamai_dns.remove_record(zone_name=zone, record_type=type, name=name)
+def remove_record(ctx, zone, name, type, target):
+    successful = ctx.obj.akamai_dns.remove_record(zone_name=zone, record_type=type, name=name, target=target)
     if successful:
         click.echo('Record has been removed.')
     else:
