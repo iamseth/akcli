@@ -63,21 +63,18 @@ class AkamaiDNS(object):
         :param record_type: (Optional) The type of records to limit the list to.
         :return: A list containing all records for the zone.
         '''
-
-        records = []
+        
         zone = self.fetch_zone(zone_name)['zone']
-        if record_type:
-            record_type = record_type.lower()
-            for record in zone.get(record_type):
-                record['type'] = record_type.upper()
+        records = []
+        for key, val in zone.items():
+            if not isinstance(val, list): continue
+            for record in val:
+                record['type'] = key.upper()
                 records.append(record)
-        else:
 
-            for key, val in zone.items():
-                if isinstance(val, list):
-                    for record in val:
-                        record['type'] = key.upper()
-                        records.append(record)
+        # Add a filter by record type if provided
+        if record_type:
+            return [r for r in records if r['type'] == record_type.upper()]
         return records
 
     def fetch_record(self, zone_name, record_type, name):
