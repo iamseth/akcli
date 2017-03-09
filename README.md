@@ -5,7 +5,7 @@ An Akamai command line client written in Python. So far only the DNS config API 
 
 Currently, the following items are supported for DNS services at Akami.
   - add_record
-  - fetch_record
+  - fetch_records
   - fetch_zone
   - list_records
   - remove_record

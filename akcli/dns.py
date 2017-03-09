@@ -117,3 +117,16 @@ class AkamaiDNS(object):
                 zone['zone'].get(record_type).remove(record)
                 return self._update_zone(zone)
         return True
+
+    def fetch_records(self, zone_name, record_type, name):
+        ''' Fetch list of records matching a particular type and name.
+
+        :param zone_name: Name of the zone to remove a record from.
+        :param record_type: Type of record (a, cname, ptr, etc).
+        :param name: This is the "from" section. That is for web01.example.com, this would be web01.
+
+        :return: Returns a potentially empty list of records.
+        '''
+
+        records = self.list_records(zone_name, record_type)
+        return [r for r in records if r['name'] == name.lower()]
