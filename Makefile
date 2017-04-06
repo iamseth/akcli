@@ -6,7 +6,7 @@ all:
 
 .PHONY: lint
 lint:
-	@pylint -r n  akcli
+	@pylint -r n --rcfile .pylintrc akcli
 
 .PHONY: test
 test:

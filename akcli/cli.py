@@ -9,8 +9,10 @@ import click
 
 import akcli
 
-SUPPORTED_RECORD_TYPES = ['A', 'CNAME', 'NS']
+from akcli.dns import AkamaiDNS
 
+SUPPORTED_RECORD_TYPES = ['A', 'CNAME', 'NS']
+DEFAULT_CONFIG_PATH = '{0}/.akamai.cfg'.format(os.path.expanduser("~"))
 
 class Context(object):
     pass
@@ -19,7 +21,7 @@ class Context(object):
 @click.group()
 @click.option('--debug', is_flag=True, help='Enables debug mode.')
 @click.option('--json', is_flag=True, help='Output as JSON.')
-@click.option('--config', type=click.File(), default='{}/.akamai.cfg'.format(os.path.expanduser("~")))
+@click.option('--config', type=click.File(), default=DEFAULT_CONFIG_PATH)
 @click.version_option(akcli.__version__)
 @click.pass_context
 def cli(ctx, debug, json, config):
@@ -38,7 +40,7 @@ def dns(ctx):
     client_token = ctx.obj.config.get('auth', 'client_token')
     client_secret = ctx.obj.config.get('auth', 'client_secret')
     access_token = ctx.obj.config.get('auth', 'access_token')
-    ctx.obj.akamai_dns = akcli.dns.AkamaiDNS(baseurl, client_token, client_secret, access_token)
+    ctx.obj.akamai_dns = AkamaiDNS(baseurl, client_token, client_secret, access_token)
 
 
 @dns.command()
@@ -48,7 +50,7 @@ def dns(ctx):
 @click.argument('target')
 @click.option('--ttl', type=click.INT, default=600, help='TTL value in seconds, such as 86400')
 @click.pass_context
-def add_record(ctx, zone, name, type, target, ttl):
+def add_record(ctx, zone, name, type, target, ttl): # pylint: disable=redefined-builtin,too-many-arguments
     successful = ctx.obj.akamai_dns.add_record(zone_name=zone, record_type=type, name=name, target=target, ttl=ttl)
     if successful:
         click.echo(_json.dumps("Record added successfully."))
@@ -62,7 +64,7 @@ def add_record(ctx, zone, name, type, target, ttl):
 @click.argument('name')
 @click.argument('type', type=click.Choice(SUPPORTED_RECORD_TYPES))
 @click.pass_context
-def fetch_records(ctx, zone, name, type):
+def fetch_records(ctx, zone, name, type): # pylint: disable=redefined-builtin
     records = ctx.obj.akamai_dns.fetch_records(zone_name=zone, record_type=type, name=name)
     if ctx.obj.json:
         click.echo(_json.dumps(records))
@@ -77,7 +79,7 @@ def fetch_records(ctx, zone, name, type):
 @click.argument('type', type=click.Choice(SUPPORTED_RECORD_TYPES))
 @click.argument('target')
 @click.pass_context
-def remove_record(ctx, zone, name, type, target):
+def remove_record(ctx, zone, name, type, target): # pylint: disable=redefined-builtin
     successful = ctx.obj.akamai_dns.remove_record(zone_name=zone, record_type=type, name=name, target=target)
     if successful:
         click.echo('Record has been removed.')
@@ -101,7 +103,7 @@ def fetch_zone(ctx, zone):
 @click.argument('zone')
 @click.argument('type', required=False, type=click.Choice(SUPPORTED_RECORD_TYPES))
 @click.pass_context
-def list_records(ctx, zone, type):
+def list_records(ctx, zone, type): # pylint: disable=redefined-builtin
     records = ctx.obj.akamai_dns.list_records(zone_name=zone, record_type=type)
     if ctx.obj.json:
         click.echo(_json.dumps(records))

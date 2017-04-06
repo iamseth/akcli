@@ -7,9 +7,9 @@ from akamai.edgegrid import EdgeGridAuth
 if sys.version_info.major < 3:
     from urlparse import urljoin
 else:
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin # pylint: disable=no-name-in-module,import-error
 
-log = logging.getLogger(__name__)
+
 
 class AkamaiDNSError(Exception):
     pass
@@ -17,6 +17,7 @@ class AkamaiDNSError(Exception):
 
 class AkamaiDNS(object):
     def __init__(self, baseurl, client_token, client_secret, access_token):
+        self.log = logging.getLogger(__name__)
         self.baseurl = baseurl
         self.session = requests.Session()
         self.session.auth = EdgeGridAuth(client_token=client_token,
@@ -39,7 +40,7 @@ class AkamaiDNS(object):
         result = self.session.post(url, data=json.dumps(zone), headers=headers)
 
         if result.status_code != 204:
-            log.error('Something went wrong with updating zone %s: %s', name, result.text)
+            self.log.error('Something went wrong with updating zone %s: %s', name, result.text)
             return False
         return True
 
@@ -52,12 +53,12 @@ class AkamaiDNS(object):
         url = urljoin(self.baseurl, '/config-dns/v1/zones/{0}'.format(zone_name))
         result = self.session.get(url)
         if result.status_code == 404:
-            log.error('Zone %s not found.', zone_name)
+            self.log.error('Zone %s not found.', zone_name)
             return None
 
         zone = result.json()
         if 'zone' not in zone or 'token' not in zone:
-            log.error('Malformed zone received. ' + zone)
+            self.log.error('Malformed zone received. ' + zone)
             raise AkamaiDNSError('Malformed zone received.')
 
         return zone
@@ -84,7 +85,7 @@ class AkamaiDNS(object):
             return [r for r in records if r['type'] == record_type.upper()]
         return records
 
-    def add_record(self, zone_name, record_type, name, target, ttl=600):
+    def add_record(self, zone_name, record_type, name, target, ttl=600): # pylint: disable=too-many-arguments
         '''Add a new DNS record to a zone.
 
         If the record exists, this will still return successfully so it is safe to re-run.
