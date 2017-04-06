@@ -54,7 +54,13 @@ class AkamaiDNS(object):
         if result.status_code == 404:
             log.error('Zone "{0}" not found.', zone_name)
             return None
-        return result.json()
+
+        zone = result.json()
+        if 'zone' not in zone or 'token' not in zone:
+            log.error('Malformed zone received. ' + zone)
+            raise AkamaiDNSError('Malformed zone received.')
+
+        return zone
 
     def list_records(self, zone_name, record_type=None):
         '''List all records for a particular zone.
