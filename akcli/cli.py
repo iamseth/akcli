@@ -25,6 +25,10 @@ class Context(object):
 @click.version_option(akcli.__version__)
 @click.pass_context
 def cli(ctx, debug, json, config):
+    '''An Akamai command line client.
+
+    See https://github.com/iamseth/akcli for more information.
+    '''
     ctx.obj = Context()
     lvl = logging.DEBUG if debug else logging.INFO
     logging.basicConfig(level=lvl, format='%(asctime)s %(levelname)s %(message)s')

@@ -44,8 +44,11 @@ access_token = abcd-randomstuffhere
 ```bash
 Usage: akcli [OPTIONS] COMMAND [ARGS]...
 
+  An Akamai command line client.
+
+  See https://github.com/iamseth/akcli for more information.
+
 Options:
-  -v, --verbose      Enables verbose mode.
   --debug            Enables debug mode.
   --json             Output as JSON.
   --config FILENAME
