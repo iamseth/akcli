@@ -39,7 +39,7 @@ class AkamaiDNS(object):
         result = self.session.post(url, data=json.dumps(zone), headers=headers)
 
         if result.status_code != 204:
-            log.error('Something went very wrong with updating the zone "{0}": {1}', name, result.text)
+            log.error('Something went wrong with updating zone %s: %s', name, result.text)
             return False
         return True
 
@@ -52,7 +52,7 @@ class AkamaiDNS(object):
         url = urljoin(self.baseurl, '/config-dns/v1/zones/{0}'.format(zone_name))
         result = self.session.get(url)
         if result.status_code == 404:
-            log.error('Zone "{0}" not found.', zone_name)
+            log.error('Zone %s not found.', zone_name)
             return None
 
         zone = result.json()
@@ -73,7 +73,8 @@ class AkamaiDNS(object):
         zone = self.fetch_zone(zone_name)['zone']
         records = []
         for key, val in zone.items():
-            if not isinstance(val, list): continue
+            if not isinstance(val, list):
+                continue
             for record in val:
                 record['type'] = key.upper()
                 records.append(record)
